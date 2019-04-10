@@ -2,12 +2,12 @@ package com.globus.droidparty.usersession
 
 import com.globus.droidparty.functions.apply
 import com.globus.droidparty.functions.first
+import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.observables.GroupedObservable
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 
 class UserSession(
@@ -20,7 +20,7 @@ class UserSession(
 
     }
 
-    private val userSessionActions = PublishSubject.create<UserSessionAction>()
+    private val userSessionActions = PublishRelay.create<UserSessionAction>()
 
     val state: Observable<UserSessionState> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         return@lazy userSessionActions
@@ -32,8 +32,7 @@ class UserSession(
                 .refCount()
     }
 
-    fun notify(userSessionAction: UserSessionAction) =
-            userSessionActions.onNext(userSessionAction)
+    fun notify(userSessionAction: UserSessionAction) = userSessionActions.accept(userSessionAction)
 
     private fun doOnUserSessionAction(
             actionObservable: GroupedObservable<*, UserSessionAction>

@@ -4,20 +4,20 @@ import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.globus.droidparty.functions.apply
 import com.globus.droidparty.usersession.UserSession
+import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
 
 @InjectViewState
 class MainPresenter(
         private val userSession: UserSession
 ) : MvpPresenter<MainView>() {
 
-    private val deepLinks = BehaviorSubject.create<DeepLink>()
+    private val deepLinks = BehaviorRelay.create<DeepLink>()
     private val disposable = CompositeDisposable()
 
     override fun onFirstViewAttach() {
@@ -42,7 +42,7 @@ class MainPresenter(
                 )
     }
 
-    fun deepLinkTo(deepLink: DeepLink) = deepLinks.onNext(deepLink)
+    fun deepLinkTo(deepLink: DeepLink) = deepLinks.accept(deepLink)
 
     override fun onDestroy() {
         super.onDestroy()
